@@ -20,8 +20,8 @@ template: main.html
 Deploy two versions of a Knative app.
 
 ```shell
-kubectl apply -f $ITER8/samples/knative/quickstart/baseline.yaml
-kubectl apply -f $ITER8/samples/knative/quickstart/experimentalservice.yaml
+kubectl apply -f $ITER8/samples/knative/slovalidation/baseline.yaml
+kubectl apply -f $ITER8/samples/knative/slovalidation/experimentalservice.yaml
 kubectl wait --for=condition=Ready ksvc/sample-app
 ```
 
@@ -74,7 +74,7 @@ kubectl wait --for=condition=Ready ksvc/sample-app
 Launch the SLO validation experiment. This experiment will generate requests for your application versions, collect latency and error-rate metrics, and progressively shift traffic and promote the candidate version after verifying that it satisfies SLOs.
 
 ```shell
-kubectl apply -f $ITER8/samples/knative/quickstart/experiment.yaml
+kubectl apply -f $ITER8/samples/knative/slovalidation/experiment.yaml
 ```
 
 ??? info "Look inside experiment.yaml"
@@ -104,7 +104,7 @@ kubectl apply -f $ITER8/samples/knative/quickstart/experiment.yaml
               args:
               - "-c"
               - |
-                kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/quickstart/{{ .promote }}.yaml
+                kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/slovalidation/{{ .promote }}.yaml
       criteria:
         requestCount: iter8-system/request-count
         objectives: 
@@ -149,6 +149,6 @@ Follow [these steps](../../../getting-started/first-experiment.md#3-observe-expe
 
 ## 4. Cleanup
 ```shell
-kubectl delete -f $ITER8/samples/knative/quickstart/experiment.yaml
-kubectl delete -f $ITER8/samples/knative/quickstart/experimentalservice.yaml
+kubectl delete -f $ITER8/samples/knative/slovalidation/experiment.yaml
+kubectl delete -f $ITER8/samples/knative/slovalidation/experimentalservice.yaml
 ```

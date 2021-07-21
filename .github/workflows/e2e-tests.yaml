@@ -46,7 +46,7 @@ jobs:
 
     - name: create baseline and candidate versions, and Iter8 experiment
       run: |
-        helm repo add iter8 https://iter8-tools.github.io/iter8/
+        helm repo add iter8 https://iter8-tools.github.io/iter8/ --force-update
         helm upgrade my-app iter8/deploy \
           --set baseline.imageTag=1.0 \
           --set candidate.imageTag=2.0 \
@@ -60,6 +60,60 @@ jobs:
     
     - name: Check if experiment is complete and found a winner
       run: iter8ctl assert -c completed -c winnerFound
+
+  knslo:
+    name: knative helm slo experiment
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - uses: engineerd/setup-kind@v0.5.0
+      with:
+        version: "v0.11.1"
+
+    - name: platform setup
+      run: |
+        export ITER8=$(pwd)
+        $ITER8/samples/first-exp/iter8-setup.sh
+        $ITER8/samples/knative/slovalidation/platform-setup.sh kourier
+
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+    
+    - name: Install iter8ctl
+      run: sudo GO111MODULE=on GOBIN=/usr/local/bin go get github.com/iter8-tools/iter8ctl@v0.1.5
+
+    - name: Get Helm
+      uses: azure/setup-helm@v1
+
+    - name: create baseline and candidate versions, and Iter8 experiment
+      run: |
+        helm repo add iter8 https://iter8-tools.github.io/iter8/ --force-update
+        
+        helm upgrade my-app iter8/knslo \
+          --set baseline.imageTag=1.0 \
+          --set candidate=null \
+          --install
+
+        kubectl wait ksvc/hello --for=condition=Ready
+
+        helm upgrade my-app iter8/knslo \
+          --set baseline.imageTag=1.0 \
+          --set candidate.imageTag=2.0 \
+          --install
+
+    - name: Wait until end of experiment and dump experiment
+      run: |
+        export EXPERIMENT=$(kubectl get experiment -o jsonpath='{.items[0].metadata.name}')
+        kubectl wait experiment $EXPERIMENT --for=condition=Completed --timeout=300s
+        kubectl get experiment $EXPERIMENT -o yaml
+    
+    - name: Check if experiment is complete and found a winner
+      run: iter8ctl assert -c completed -c winnerFound
+
 
   quickstart:
     name: quickstart experiment
@@ -76,13 +130,13 @@ jobs:
       run: |
         export ITER8=$(pwd)
         $ITER8/samples/first-exp/iter8-setup.sh
-        $ITER8/samples/knative/quickstart/platform-setup.sh kourier
+        $ITER8/samples/knative/slovalidation/platform-setup.sh kourier
 
     - name: create Knative service and readiness check
       run: |
         export ITER8=$(pwd)
-        kubectl apply -f $ITER8/samples/knative/quickstart/baseline.yaml
-        kubectl apply -f $ITER8/samples/knative/quickstart/experimentalservice.yaml
+        kubectl apply -f $ITER8/samples/knative/slovalidation/baseline.yaml
+        kubectl apply -f $ITER8/samples/knative/slovalidation/experimentalservice.yaml
         kubectl wait --for=condition=Ready ksvc/sample-app --timeout=240s
 
     - name: Create experiment
@@ -90,7 +144,7 @@ jobs:
         export ITER8=$(pwd)
 
         # Starting the experiment
-        kubectl apply -f $ITER8/samples/knative/quickstart/experiment.yaml
+        kubectl apply -f $ITER8/samples/knative/slovalidation/experiment.yaml
 
     - name: Wait until end of experiment
       run: |
@@ -103,7 +157,7 @@ jobs:
       run: |
         export ITER8=$(pwd)
         export EXPERIMENT=quickstart-exp
-        source $ITER8/samples/knative/quickstart/check.sh
+        source $ITER8/samples/knative/slovalidation/check.sh
 
   hybrid:
     name: hybrid experiment
@@ -120,13 +174,13 @@ jobs:
       run: |
         export ITER8=$(pwd)
         $ITER8/samples/first-exp/iter8-setup.sh
-        $ITER8/samples/knative/quickstart/platform-setup.sh kourier
+        $ITER8/samples/knative/slovalidation/platform-setup.sh kourier
 
     - name: create Knative service and readiness check
       run: |
         export ITER8=$(pwd)
-        kubectl apply -f $ITER8/samples/knative/quickstart/baseline.yaml
-        kubectl apply -f $ITER8/samples/knative/quickstart/experimentalservice.yaml
+        kubectl apply -f $ITER8/samples/knative/slovalidation/baseline.yaml
+        kubectl apply -f $ITER8/samples/knative/slovalidation/experimentalservice.yaml
         kubectl wait --for=condition=Ready ksvc/sample-app --timeout=240s
 
     - name: create experiment
@@ -151,7 +205,7 @@ jobs:
       run: |
         export ITER8=$(pwd)
         export EXPERIMENT=hybrid-exp
-        source $ITER8/samples/knative/quickstart/check.sh
+        source $ITER8/samples/knative/slovalidation/check.sh
 
   conformance:
     name: conformance experiment
@@ -168,7 +222,7 @@ jobs:
       run: |
         export ITER8=$(pwd)
         $ITER8/samples/first-exp/iter8-setup.sh
-        $ITER8/samples/knative/quickstart/platform-setup.sh kourier
+        $ITER8/samples/knative/slovalidation/platform-setup.sh kourier
 
     - name: create Knative app
       run: |
@@ -209,12 +263,12 @@ jobs:
       run: |
         export ITER8=$(pwd)
         $ITER8/samples/first-exp/iter8-setup.sh
-        $ITER8/samples/knative/quickstart/platform-setup.sh kourier
+        $ITER8/samples/knative/slovalidation/platform-setup.sh kourier
 
     - name: create Knative service and readiness check
       run: |
         export ITER8=$(pwd)
-        kubectl apply -f $ITER8/samples/knative/quickstart/baseline.yaml
+        kubectl apply -f $ITER8/samples/knative/slovalidation/baseline.yaml
         kubectl apply -f $ITER8/samples/knative/fixed-split/experimentalservice.yaml
         kubectl wait --for=condition=Ready ksvc/sample-app --timeout=360s
 
@@ -236,7 +290,7 @@ jobs:
       run: |
         export ITER8=$(pwd)
         export EXPERIMENT=fixedsplit-exp
-        source $ITER8/samples/knative/quickstart/check.sh
+        source $ITER8/samples/knative/slovalidation/check.sh
 
   race-condition:
     name: testing race conditions with Iter8 metrics

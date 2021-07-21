@@ -9,7 +9,7 @@ kubectl cluster-info --context kind-kind
 # platform setup
 echo "Setting up platform"
 $ITER8/samples/first-exp/iter8-setup.sh
-$ITER8/samples/knative/quickstart/platform-setup.sh istio
+$ITER8/samples/knative/slovalidation/platform-setup.sh istio
 
 # create app versions
 echo "Creating live and dark versions"

@@ -27,7 +27,7 @@ template: main.html
               args:
               - "-c"
               - |
-                kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/quickstart/{{ .promote }}.yaml
+                kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/slovalidation/{{ .promote }}.yaml
       criteria:
         requestCount: iter8-knative/request-count
         rewards: # Business rewards

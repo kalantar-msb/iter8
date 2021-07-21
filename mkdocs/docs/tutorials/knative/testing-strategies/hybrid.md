@@ -21,8 +21,8 @@ template: main.html
 Deploy two versions of a Knative app.
 
 ```shell
-kubectl apply -f $ITER8/samples/knative/quickstart/baseline.yaml
-kubectl apply -f $ITER8/samples/knative/quickstart/experimentalservice.yaml
+kubectl apply -f $ITER8/samples/knative/slovalidation/baseline.yaml
+kubectl apply -f $ITER8/samples/knative/slovalidation/experimentalservice.yaml
 kubectl wait --for=condition=Ready ksvc/sample-app
 ```
 
@@ -145,7 +145,7 @@ kubectl apply -f $ITER8/samples/knative/hybrid/experiment.yaml
               args:
               - "-c"
               - |
-                kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/quickstart/{{ .promote }}.yaml
+                kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/slovalidation/{{ .promote }}.yaml
       criteria:
         rewards: # Business rewards
         - metric: iter8-knative/user-engagement
@@ -194,5 +194,5 @@ Follow [these steps](../../../getting-started/first-experiment.md#3-observe-expe
 ## 5. Cleanup
 ```shell
 kubectl delete -f $ITER8/samples/knative/hybrid/experiment.yaml
-kubectl delete -f $ITER8/samples/knative/quickstart/experimentalservice.yaml
+kubectl delete -f $ITER8/samples/knative/slovalidation/experimentalservice.yaml
 ```

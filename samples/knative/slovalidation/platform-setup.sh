@@ -34,7 +34,7 @@ if [[ "istio" == ${1} ]]; then
     kubectl apply -f https://github.com/knative/operator/releases/download/v0.24.0/operator.yaml
     sleep 10
     kubectl wait --for=condition=available deploy/knative-operator --timeout=300s
-    kubectl apply -f $ITER8/samples/knative/quickstart/withistio.yaml
+    kubectl apply -f $ITER8/samples/knative/slovalidation/withistio.yaml
     sleep 20
     kubectl wait --for=condition=available deployment --all -n knative-serving --timeout=300s
     kubectl wait crd --all --for condition=established --timeout=300s
@@ -43,7 +43,7 @@ elif [[ "kourier" == ${1} ]]; then
     kubectl apply -f https://github.com/knative/operator/releases/download/v0.24.0/operator.yaml
     sleep 10
     kubectl wait --for=condition=available deploy/knative-operator --timeout=300s
-    kubectl apply -f $ITER8/samples/knative/quickstart/withkourier.yaml
+    kubectl apply -f $ITER8/samples/knative/slovalidation/withkourier.yaml
     sleep 20
     kubectl wait --for=condition=available deployment --all -n knative-serving --timeout=300s
     kubectl wait crd --all --for condition=established --timeout=300s    

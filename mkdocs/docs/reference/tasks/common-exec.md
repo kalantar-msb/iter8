@@ -26,7 +26,7 @@ spec:
           args:
           - "-c"
           - |
-            kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/quickstart/{{ .promote }}.yaml
+            kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/slovalidation/{{ .promote }}.yaml
     ...
   versionInfo:
     # information about app versions used in this experiment

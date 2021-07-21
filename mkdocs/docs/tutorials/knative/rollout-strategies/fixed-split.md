@@ -15,7 +15,7 @@ template: main.html
 
 ## 1. Create versions and fix traffic split
 ```shell
-kubectl apply -f $ITER8/samples/knative/quickstart/baseline.yaml
+kubectl apply -f $ITER8/samples/knative/slovalidation/baseline.yaml
 kubectl apply -f $ITER8/samples/knative/fixed-split/experimentalservice.yaml
 kubectl wait --for=condition=Ready ksvc/sample-app
 ```
@@ -79,7 +79,7 @@ kubectl apply -f $ITER8/samples/knative/fixed-split/experiment.yaml
               args:
               - "-c"
               - |
-                kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/quickstart/{{ .promote }}.yaml
+                kubectl apply -f https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/slovalidation/{{ .promote }}.yaml
       criteria:
         requestCount: iter8-system/request-count
         objectives: 

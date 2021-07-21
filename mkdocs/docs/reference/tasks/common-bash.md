@@ -29,12 +29,12 @@ spec:
       name: sample-app-v1
       variables:
       - name: promotionManifest
-        value: https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/quickstart/baseline.yaml
+        value: https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/slovalidation/baseline.yaml
     candidates:
     - name: sample-app-v2
       variables:
       - name: promotionManifest
-        value: https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/quickstart/candidate.yaml
+        value: https://raw.githubusercontent.com/iter8-tools/iter8/master/samples/knative/slovalidation/candidate.yaml
 ```
 
 ## Inputs

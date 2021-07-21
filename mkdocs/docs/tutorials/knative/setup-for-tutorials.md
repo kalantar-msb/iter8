@@ -21,11 +21,11 @@ Unless Istio is especially mentioned as a requirement, we recommend Kourier as t
     === "Kourier"
 
         ```shell
-        $ITER8/samples/knative/quickstart/platform-setup.sh kourier
+        $ITER8/samples/knative/slovalidation/platform-setup.sh kourier
         ```
 
     === "Istio"
 
         ```shell
-        $ITER8/samples/knative/quickstart/platform-setup.sh istio
+        $ITER8/samples/knative/slovalidation/platform-setup.sh istio
         ```

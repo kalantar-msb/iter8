@@ -1,17 +1,11 @@
 common:
   application: hello
   repo: "gcr.io/google-samples/hello-app"
-
 baseline:
-  dynamic:
-    tag: "1.0"
-    id: "v1"
-
-candidate:
   dynamic:
     tag: "2.0"
     id: "v2"
-
+candidate: null
 experiment:
   # Iter8 will update this values.yaml file in the gitops-test branch of your repo
   helmexGitOps:

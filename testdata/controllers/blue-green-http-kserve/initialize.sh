@@ -42,10 +42,12 @@ data:
       resources:
       - gvrShort: isvc
         name: wisdom-primary
+        namespace: modelmesh-serving
     - weight: 40
       resources:
       - gvrShort: isvc
         name: wisdom-candidate
+        namespace: modelmesh-serving
     # routing templates
     routingTemplates:
       blue-green-wisdom:

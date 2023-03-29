@@ -14,7 +14,7 @@ source query.sh
 less initialize.sh
 
 # Explore status of virtual service ... 
-kubectl get vs wisdom -o yaml
+kubectl get virtualservice wisdom -o yaml
 
 # check back on status of query ... 
 
@@ -27,7 +27,7 @@ source query.sh
 less v2-candidate.sh
 
 # Explore status of virtual service ... 
-kubectl get vs wisdom -o yaml
+kubectl get virtualservice wisdom -o yaml
 
 # check back on status of warm up 
 
@@ -35,7 +35,7 @@ kubectl get vs wisdom -o yaml
 ./bumpweights.sh
 
 # Explore status of virtual service ... 
-kubectl get vs wisdom -o yaml
+kubectl get virtualservice wisdom -o yaml
 
 # promote v2
 ./promote-v2.sh

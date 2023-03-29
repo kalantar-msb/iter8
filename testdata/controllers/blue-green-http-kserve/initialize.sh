@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: wisdom
 spec:
-  externalName: knative-local-gateway.istio-system.svc.cluster.local
+  externalName: modelmesh-serving.modelmesh-serving.svc.cluster.local
   sessionAffinity: None
   type: ExternalName
 ---
@@ -12,18 +12,20 @@ apiVersion: "serving.kserve.io/v1beta1"
 kind: "InferenceService"
 metadata:
   name: wisdom-primary
+  namespace: modelmesh-serving
   labels:
     app.kubernetes.io/name: wisdom
     app.kubernetes.io/version: v1
     iter8.tools/watch: "true"
+  annotations:
+    serving.kserve.io/deploymentMode: ModelMesh
+    serving.kserve.io/secretKey: localMinIO
 spec:
   predictor:
-    minReplicas: 1
     model:
       modelFormat:
         name: sklearn
-      runtime: kserve-mlserver
-      storageUri: "gs://seldon-models/sklearn/mms/lr_model"
+      storageUri: s3://modelmesh-example-models/sklearn/mnist-svm.joblib
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -56,8 +58,6 @@ data:
           spec:
             gateways:
             - mesh
-            - knative-serving/knative-ingress-gateway
-            - knative-serving/knative-local-gateway
             hosts:
             - wisdom
             - wisdom.default
@@ -66,7 +66,7 @@ data:
             - name: blue
               match:
               - uri:
-                  prefix: /enlightenme
+                  prefix: /infer
               {{- if gt (index .Weights 1) 0 }}
                 headers:
                   branch: 
@@ -76,11 +76,11 @@ data:
                 uri: /v2/models/wisdom-primary/infer
               route:
               - destination:
-                  host: knative-local-gateway.istio-system.svc.cluster.local
+                  host: wisdom.default.svc.cluster.local
                 headers:
                   request:
                     set:
-                      Host: wisdom-primary-predictor-default.default.svc.cluster.local
+                      Host: wisdom.default.svc.cluster.local
                     {{- if gt (index .Weights 1) 0 }}
                     remove:
                     - branch
@@ -92,25 +92,25 @@ data:
                   branch: 
                     exact: green
                 uri:
-                  prefix: /enlightenme
+                  prefix: /infer
               rewrite:
                 uri: /v2/models/wisdom-candidate/infer
               route:
               - destination:
-                  host: knative-local-gateway.istio-system.svc.cluster.local
+                  host: wisdom.default.svc.cluster.local
                 headers:
                   request:
                     set:
-                      Host: wisdom-candidate-predictor-default.default.svc.cluster.local
+                      Host: wisdom.default.svc.cluster.local
                     remove:
                     - branch
             - name: split
               match:
               - uri:
-                  prefix: /enlightenme
+                  prefix: /infer
               route:
               - destination:
-                  host: knative-local-gateway.istio-system.svc.cluster.local
+                  host: wisdom.default.svc.cluster.local
                 weight: {{ index .Weights 0 }}
                 headers:
                   request:
@@ -118,7 +118,7 @@ data:
                       branch: blue
                       Host: wisdom.default
               - destination:
-                  host: knative-local-gateway.istio-system.svc.cluster.local
+                  host: wisdom.default.svc.cluster.local
                 weight: {{ index .Weights 1 }}
                 headers:
                   request:

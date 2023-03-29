@@ -3,16 +3,18 @@ apiVersion: "serving.kserve.io/v1beta1"
 kind: "InferenceService"
 metadata:
   name: wisdom-candidate
+  namespace: modelmesh-serving
   labels:
     app.kubernetes.io/name: wisdom
     app.kubernetes.io/version: v2
     iter8.tools/watch: "true"
+  annotations:
+    serving.kserve.io/deploymentMode: ModelMesh
+    serving.kserve.io/secretKey: localMinIO
 spec:
   predictor:
-    minReplicas: 1
     model:
       modelFormat:
         name: sklearn
-      runtime: kserve-mlserver
-      storageUri: "gs://seldon-models/sklearn/mms/lr_model"
+      storageUri: s3://modelmesh-example-models/sklearn/mnist-svm.joblib
 EOF

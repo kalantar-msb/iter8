@@ -363,4 +363,6 @@ data:
     }
   query.sh: |
     cat grpc_input.json | grpcurl -plaintext -proto kserve.proto -d @ wisdom.modelmesh-serving:80 inference.GRPCInferenceService.ModelInfer
+  test_query.sh: |
+    cat grpc_input.json | grpcurl -plaintext -proto kserve.proto -d @ -H 'traffic: test' wisdom.modelmesh-serving:80 inference.GRPCInferenceService.ModelInfer
 EOF

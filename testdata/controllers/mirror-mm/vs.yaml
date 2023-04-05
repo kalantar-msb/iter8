@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: wisdom
+  namespace: modelmesh-serving
+spec:
+  gateways:
+  - wisdom-gateway
+  hosts:
+  - wisdom.modelmesh-serving
+  - wisdom.modelmesh-serving.svc
+  - wisdom.modelmesh-serving.svc.cluster.local
+  http:
+  - route:
+    - destination:
+        host: modelmesh-serving.modelmesh-serving.svc.cluster.local
+        port:
+          number: 8033
+      headers:
+        request:
+          set:
+            mm-vmodel-id: "wisdom-primary"
+    mirror:
+      host: modelmesh-serving.modelmesh-serving.svc.cluster.local
+      port:
+        number: 8033
+    headers:
+      request:
+        set:
+          mm-vmodel-id: "wisdom-candidate"
+    mirrorPercentage:
+      value: 100

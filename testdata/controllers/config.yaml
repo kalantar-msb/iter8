@@ -4,8 +4,11 @@ defaultResync: 30s
 resourceTypes:
   deploy:
     Group: apps
-    Gersion: v1
+    Version: v1
     Resource: deployments
+    conditions:
+    - name: Available
+      status: "True"
   svc:
     Group: ""
     Version: v1
@@ -21,3 +24,7 @@ resourceTypes:
     Group: networking.istio.io
     Version: v1beta1
     Resource: virtualservices
+  cm:
+    Group: ""
+    Version: v1
+    Resource: configmaps
